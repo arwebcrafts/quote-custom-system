@@ -19,7 +19,7 @@ const AppContent: React.FC = () => {
 
   if (viewMode === 'admin') {
     return (
-      <div className="min-h-screen bg-obsidian-deep animate-in fade-in duration-300">
+      <div className="min-h-screen bg-[#F4F6F9] animate-in fade-in duration-300">
         <AdminDashboard />
         <ToastContainer />
       </div>
