@@ -82,13 +82,18 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
   const [notes, setNotes] = useState<string>('');
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
-  // Payment Options
+  // Payment Options & Flexible Choice (Deposit vs Full Upfront 5% Off)
+  const [paymentCommitment, setPaymentCommitment] = useState<'deposit_50' | 'full_upfront_5pct'>('deposit_50');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('deposit_online');
   const [onlineProvider, setOnlineProvider] = useState<PaymentProvider>('GrabPay');
   const [duitNowOpen, setDuitNowOpen] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingLead | null>(null);
 
-  const depositFee = paymentMethod === 'pay_at_clinic' ? 0 : 50;
+  const upfrontDiscount = Math.round(quoteSummary.quotedTotal * 0.05);
+  const fullUpfrontAmount = quoteSummary.quotedTotal - upfrontDiscount;
+  const amountDueNow = paymentCommitment === 'deposit_50'
+    ? (paymentMethod === 'pay_at_clinic' ? 0 : 50)
+    : fullUpfrontAmount;
 
   const validate = () => {
     const errors: { [key: string]: string } = {};
@@ -129,8 +134,9 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
       selectedTreatments: quoteSummary.items,
       packageTitle: quoteSummary.title,
       pricingOption: quoteSummary.pricingOption,
-      quotedTotal: quoteSummary.quotedTotal,
-      depositAmount: paymentMethod === 'pay_at_clinic' ? 0 : 50,
+      paymentCommitment,
+      quotedTotal: paymentCommitment === 'full_upfront_5pct' ? fullUpfrontAmount : quoteSummary.quotedTotal,
+      depositAmount: amountDueNow,
       paymentMethod,
       paymentProvider: provider,
       paymentStatus,
@@ -536,19 +542,108 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
         </div>
       </div>
 
-      {/* 5. Payment Method Selector (Tailored for Malaysia) */}
+      {/* 5. Payment Options & Flexible Choice (2-Card Choice) */}
       <div className="space-y-4 pt-4 border-t border-pearl-200/80">
         <div>
           <h4 className="font-sans text-xs uppercase tracking-wider font-bold text-obsidian">
-            {t.paymentSectionTitle}
+            {language === 'EN' ? 'Payment Commitment & Promotional Guarantee' : 'Komitmen Pembayaran & Jaminan Promosi'}
           </h4>
           <p className="font-sans text-xs text-obsidian/60 mt-0.5">
-            {t.paymentSectionSub}
+            {language === 'EN' 
+              ? 'Choose how you would like to secure your consultation slot today.' 
+              : 'Pilih kaedah pilihan anda untuk mengunci slot temujanji hari ini.'}
           </p>
         </div>
 
-        <div className="space-y-3">
-          {/* Option 1: Pay RM 50 Deposit Online (FPX, GrabPay, TnG, Card) */}
+        {/* 2-CARD PAYMENT CHOICE (CRITICAL SPECIFICATION) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Choice A: Pay RM 50 Deposit Only */}
+          <button
+            type="button"
+            onClick={() => setPaymentCommitment('deposit_50')}
+            className={`p-4 rounded-2xl text-left border transition-all relative ${
+              paymentCommitment === 'deposit_50'
+                ? 'bg-plum-dark text-white border-rosegold shadow-md ring-2 ring-rosegold/30'
+                : 'bg-white/80 hover:bg-white border-pearl-200 text-obsidian'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
+                paymentCommitment === 'deposit_50' ? 'text-rosegold-light' : 'text-plum-muted'
+              }`}>
+                {language === 'EN' ? 'Choice A: Deposit Only' : 'Pilihan A: Deposit Sahaja'}
+              </span>
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${
+                paymentCommitment === 'deposit_50' ? 'bg-rosegold border-rosegold text-plum-dark' : 'border-pearl-300'
+              }`}>
+                {paymentCommitment === 'deposit_50' && <CheckCircle2 className="w-3.5 h-3.5" />}
+              </div>
+            </div>
+
+            <div className="font-serif text-2xl font-bold my-1">
+              RM 50
+            </div>
+
+            <p className={`text-xs leading-relaxed ${
+              paymentCommitment === 'deposit_50' ? 'text-rose-100/90' : 'text-obsidian/70'
+            }`}>
+              {language === 'EN'
+                ? 'Locks in Black Friday Promo Rate today; pay remaining balance at clinic after doctor consultation.'
+                : 'Kunci kadar promosi Black Friday hari ini; bayar baki di klinik selepas konsultasi doktor.'}
+            </p>
+          </button>
+
+          {/* Choice B: Pay Full Package Amount Upfront (Save Extra 5%) */}
+          <button
+            type="button"
+            onClick={() => setPaymentCommitment('full_upfront_5pct')}
+            className={`p-4 rounded-2xl text-left border transition-all relative ${
+              paymentCommitment === 'full_upfront_5pct'
+                ? 'bg-plum-dark text-white border-rosegold shadow-md ring-2 ring-rosegold/30'
+                : 'bg-white/80 hover:bg-white border-pearl-200 text-obsidian'
+            }`}
+          >
+            <span className="absolute -top-2.5 right-3 text-[9px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded-full shadow-sm">
+              Save Extra 5% VIP
+            </span>
+
+            <div className="flex items-center justify-between mb-1">
+              <span className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
+                paymentCommitment === 'full_upfront_5pct' ? 'text-rosegold-light' : 'text-plum-muted'
+              }`}>
+                {language === 'EN' ? 'Choice B: Full Upfront' : 'Pilihan B: Bayaran Penuh'}
+              </span>
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${
+                paymentCommitment === 'full_upfront_5pct' ? 'bg-rosegold border-rosegold text-plum-dark' : 'border-pearl-300'
+              }`}>
+                {paymentCommitment === 'full_upfront_5pct' && <CheckCircle2 className="w-3.5 h-3.5" />}
+              </div>
+            </div>
+
+            <div className="flex items-baseline gap-2 my-1">
+              <span className="font-serif text-2xl font-bold">
+                {formatCurrency(fullUpfrontAmount)}
+              </span>
+              <span className={`text-xs line-through ${
+                paymentCommitment === 'full_upfront_5pct' ? 'text-rose-200/60' : 'text-obsidian/40'
+              }`}>
+                {formatCurrency(quoteSummary.quotedTotal)}
+              </span>
+            </div>
+
+            <p className={`text-xs leading-relaxed ${
+              paymentCommitment === 'full_upfront_5pct' ? 'text-emerald-300' : 'text-emerald-700 font-medium'
+            }`}>
+              {language === 'EN'
+                ? `Immediate checkout. Extra 5% VIP discount applied (Save ${formatCurrency(upfrontDiscount)}).`
+                : `Bayar penuh sekarang. Diskaun VIP tambahan 5% (Jimat ${formatCurrency(upfrontDiscount)}).`}
+            </p>
+          </button>
+        </div>
+
+        {/* Payment Channels Selector */}
+        <div className="space-y-3 pt-2">
+          {/* Option 1: Online Banking & Cards */}
           <div
             onClick={() => setPaymentMethod('deposit_online')}
             className={`cursor-pointer p-4 rounded-2xl border transition-all ${
@@ -562,10 +657,10 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
                 <CreditCard className="w-5 h-5 text-gold shrink-0 mt-0.5" />
                 <div>
                   <div className="text-xs font-bold text-obsidian font-sans">
-                    {t.payDepositOnline}
+                    {paymentCommitment === 'deposit_50' ? t.payDepositOnline : 'Pay Full Package Online (Stripe / FPX / eWallet)'}
                   </div>
                   <div className="text-[11px] text-obsidian/65 font-sans mt-0.5">
-                    {t.payDepositOnlineDesc}
+                    {paymentCommitment === 'deposit_50' ? t.payDepositOnlineDesc : 'Instant transaction receipt issued with slot guarantee.'}
                   </div>
                 </div>
               </div>
@@ -630,33 +725,35 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
           </div>
 
           {/* Option 3: Reserve Slot & Pay at Clinic Counter */}
-          <div
-            onClick={() => setPaymentMethod('pay_at_clinic')}
-            className={`cursor-pointer p-4 rounded-2xl border transition-all ${
-              paymentMethod === 'pay_at_clinic'
-                ? 'bg-white shadow-gold-card border-gold ring-2 ring-gold/20'
-                : 'bg-white/60 hover:bg-white border-pearl-200'
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-xs font-bold text-obsidian font-sans">
-                    {t.payAtClinic}
-                  </div>
-                  <div className="text-[11px] text-obsidian/65 font-sans mt-0.5">
-                    {t.payAtClinicDesc}
+          {paymentCommitment === 'deposit_50' && (
+            <div
+              onClick={() => setPaymentMethod('pay_at_clinic')}
+              className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+                paymentMethod === 'pay_at_clinic'
+                  ? 'bg-white shadow-gold-card border-gold ring-2 ring-gold/20'
+                  : 'bg-white/60 hover:bg-white border-pearl-200'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-xs font-bold text-obsidian font-sans">
+                      {t.payAtClinic}
+                    </div>
+                    <div className="text-[11px] text-obsidian/65 font-sans mt-0.5">
+                      {t.payAtClinicDesc}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${
-                paymentMethod === 'pay_at_clinic' ? 'bg-gold border-gold text-white' : 'border-pearl-300'
-              }`}>
-                {paymentMethod === 'pay_at_clinic' && <CheckCircle2 className="w-4 h-4 fill-white text-gold" />}
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${
+                  paymentMethod === 'pay_at_clinic' ? 'bg-gold border-gold text-white' : 'border-pearl-300'
+                }`}>
+                  {paymentMethod === 'pay_at_clinic' && <CheckCircle2 className="w-4 h-4 fill-white text-gold" />}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -664,15 +761,17 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
       <div className="p-5 rounded-2xl glass-onyx text-white border border-gold/30 shadow-onyx-depth flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div>
           <div className="text-[11px] text-pearl-300 uppercase tracking-wider font-sans">
-            Deposit Due Now:
+            {paymentCommitment === 'deposit_50' ? 'Deposit Due Now:' : 'Total Payable Today (5% Discount Applied):'}
           </div>
           <div className="font-serif text-3xl font-light text-gold mt-0.5">
-            {formatCurrency(depositFee)}
+            {formatCurrency(amountDueNow)}
           </div>
           <p className="text-[11px] text-pearl-300 font-sans mt-0.5">
-            {paymentMethod === 'pay_at_clinic' 
-              ? 'Pay balance at clinic counter on appointment day.' 
-              : 'Deducted directly from your final invoice at the clinic.'}
+            {paymentCommitment === 'deposit_50'
+              ? (paymentMethod === 'pay_at_clinic' 
+                  ? 'Pay balance at clinic counter on appointment day.' 
+                  : 'RM 50 deposit is deducted directly from your final invoice at the clinic.')
+              : `Includes 5% VIP upfront discount (Saved ${formatCurrency(upfrontDiscount)}). Zero further payments required.`}
           </p>
         </div>
 
@@ -694,7 +793,7 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
       <DuitNowModal
         isOpen={duitNowOpen}
         onClose={() => setDuitNowOpen(false)}
-        depositAmount={50}
+        depositAmount={amountDueNow}
         patientName={patientName}
         phone={phone}
         onPaymentConfirmed={() => {
@@ -705,3 +804,4 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
     </form>
   );
 };
+

@@ -3,22 +3,28 @@ import { useClinic } from '../../context/ClinicContext';
 import { HelpMeChooseQuiz } from './HelpMeChooseQuiz';
 import { DirectMenuBuilder } from './DirectMenuBuilder';
 import { BookingSlotAndPayment } from './BookingSlotAndPayment';
+import { LuxuryGiftCardEngine } from './LuxuryGiftCardEngine';
 import { ProtocolPackage, Treatment } from '../../types';
-import { Sparkles, Zap, ShieldCheck } from 'lucide-react';
+import { Sparkles, Zap, Gift, ShieldCheck } from 'lucide-react';
 
 export const QuotationEngine: React.FC = () => {
-  const { t, language, preselectedTreatmentId } = useClinic();
+  const { 
+    t, 
+    language, 
+    preselectedTreatmentId, 
+    activeQuotationTab, 
+    setActiveQuotationTab 
+  } = useClinic();
 
-  const [activeTab, setActiveTab] = useState<'quiz' | 'direct'>('quiz');
   const [inBookingMode, setInBookingMode] = useState<boolean>(false);
 
-  // Switch to Direct Menu if a specific treatment was clicked from the Treatments grid
+  // Switch to Direct Menu if a specific treatment was clicked from the Accordion
   useEffect(() => {
     if (preselectedTreatmentId) {
-      setActiveTab('direct');
+      setActiveQuotationTab('direct');
       setInBookingMode(false);
     }
-  }, [preselectedTreatmentId]);
+  }, [preselectedTreatmentId, setActiveQuotationTab]);
 
   // Quote state to forward into Booking
   const [quoteSummary, setQuoteSummary] = useState<{
@@ -67,54 +73,74 @@ export const QuotationEngine: React.FC = () => {
   };
 
   return (
-    <section id="quotation-engine" className="py-16 px-4 sm:px-6 lg:px-8 relative scroll-mt-24">
+    <section id="quotation-engine" className="py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-24 font-sans">
       {/* Background Lighting Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[48rem] h-[32rem] bg-gold/10 rounded-full filter blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[48rem] h-[32rem] bg-mauve/15 rounded-full filter blur-[120px] -z-10 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold-deep text-xs font-bold uppercase tracking-widest mb-3 font-sans">
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
-            <span>{t.engineEyebrow}</span>
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-mauve/20 border border-mauve/30 text-plum-muted text-xs font-bold uppercase tracking-widest mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-rosegold-dark" />
+            <span>{language === 'EN' ? 'Interactive Treatment & Gifting Concierge' : 'Konsierj Rawatan & Hadiah Interaktif'}</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-light text-obsidian tracking-[-0.02em] leading-tight">
-            {t.engineTitle}
+          <h2 className="font-serif text-3xl sm:text-5xl font-light text-plum-dark tracking-[-0.02em] leading-tight">
+            {language === 'EN' ? 'Quotation, Booking & Gift Card Engine' : 'Enjin Sebut Harga, Tempahan & Kad Hadiah'}
           </h2>
-          <p className="font-sans text-xs sm:text-base text-obsidian/75 mt-3 leading-relaxed">
-            {t.engineSub}
+          <p className="text-xs sm:text-base text-plum-muted mt-3 leading-relaxed">
+            {language === 'EN'
+              ? 'Calculate transparent package pricing, reserve a doctor suite with flexible payments, or send a luxury digital gift card.'
+              : 'Kira sebut harga pakej telus, tempah bilik konsultasi doktor, atau hadiahkan kad digital eksklusif.'}
           </p>
         </div>
 
-        {/* Master Pearl & Glass Container with Mobile-App Feel */}
-        <div className="glass-pearl-strong rounded-3xl p-5 sm:p-8 border border-white/95 shadow-pearl-glass backdrop-blur-2xl transition-all">
-          {/* Top Engine Tabs (Only visible when not yet in Step 4 booking) */}
+        {/* Master Glassmorphic Pearl & Plum Container */}
+        <div className="glass-nuve-strong rounded-[32px] sm:rounded-[40px] p-5 sm:p-9 border border-white/95 shadow-pearl-glass backdrop-blur-2xl transition-all">
+          
+          {/* Top 3 Mode Tabs (Only visible when not yet in Step 4 booking) */}
           {!inBookingMode && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-1.5 bg-pearl-100/80 rounded-2xl border border-pearl-200/80 mb-8 font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-lavender-mist/70 rounded-2xl border border-white/80 mb-8 font-sans">
+              
+              {/* Tab 1: Guided AI Skin Quiz */}
               <button
                 type="button"
-                onClick={() => setActiveTab('quiz')}
-                className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-                  activeTab === 'quiz'
-                    ? 'bg-obsidian text-white shadow-md'
-                    : 'text-obsidian/70 hover:text-obsidian hover:bg-white/50'
+                onClick={() => setActiveQuotationTab('quiz')}
+                className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                  activeQuotationTab === 'quiz'
+                    ? 'bg-plum-dark text-white shadow-md'
+                    : 'text-plum-muted hover:text-plum-dark hover:bg-white/60'
                 }`}
               >
-                <Sparkles className={`w-4 h-4 ${activeTab === 'quiz' ? 'text-gold' : 'text-obsidian/50'}`} />
-                <span>{t.tabA}</span>
+                <Sparkles className={`w-4 h-4 ${activeQuotationTab === 'quiz' ? 'text-rosegold-light' : 'text-plum-muted'}`} />
+                <span className="truncate">{language === 'EN' ? '✨ Guided AI Skin Quiz (60s)' : '✨ Kuiz Kulit AI (60s)'}</span>
               </button>
 
+              {/* Tab 2: Direct Procedure Calculator */}
               <button
                 type="button"
-                onClick={() => setActiveTab('direct')}
-                className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-                  activeTab === 'direct'
-                    ? 'bg-obsidian text-white shadow-md'
-                    : 'text-obsidian/70 hover:text-obsidian hover:bg-white/50'
+                onClick={() => setActiveQuotationTab('direct')}
+                className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                  activeQuotationTab === 'direct'
+                    ? 'bg-plum-dark text-white shadow-md'
+                    : 'text-plum-muted hover:text-plum-dark hover:bg-white/60'
                 }`}
               >
-                <Zap className={`w-4 h-4 ${activeTab === 'direct' ? 'text-gold' : 'text-obsidian/50'}`} />
-                <span>{t.tabB}</span>
+                <Zap className={`w-4 h-4 ${activeQuotationTab === 'direct' ? 'text-rosegold-light' : 'text-plum-muted'}`} />
+                <span className="truncate">{language === 'EN' ? '⚡ Direct Procedure Menu' : '⚡ Menu Rawatan Terus'}</span>
+              </button>
+
+              {/* Tab 3: Buy & Send Luxury Gift Card */}
+              <button
+                type="button"
+                onClick={() => setActiveQuotationTab('giftcard')}
+                className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                  activeQuotationTab === 'giftcard'
+                    ? 'bg-plum-dark text-white shadow-md'
+                    : 'text-plum-muted hover:text-plum-dark hover:bg-white/60'
+                }`}
+              >
+                <Gift className={`w-4 h-4 ${activeQuotationTab === 'giftcard' ? 'text-rosegold-light' : 'text-plum-muted'}`} />
+                <span className="truncate">{language === 'EN' ? '🎁 Send Luxury Gift Card' : '🎁 Hantar Kad Hadiah'}</span>
               </button>
             </div>
           )}
@@ -125,10 +151,12 @@ export const QuotationEngine: React.FC = () => {
               quoteSummary={quoteSummary}
               onBack={() => setInBookingMode(false)}
             />
-          ) : activeTab === 'quiz' ? (
+          ) : activeQuotationTab === 'quiz' ? (
             <HelpMeChooseQuiz onCompleteQuiz={handleQuizComplete} />
-          ) : (
+          ) : activeQuotationTab === 'direct' ? (
             <DirectMenuBuilder onProceedToBooking={handleDirectComplete} />
+          ) : (
+            <LuxuryGiftCardEngine />
           )}
         </div>
       </div>

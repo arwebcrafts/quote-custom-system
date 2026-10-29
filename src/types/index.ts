@@ -70,6 +70,7 @@ export type LeadStatus = 'New Quote' | 'Deposit Paid' | 'Consulted' | 'Package C
 export type Branch = 'Bangsar Flagship' | 'Damansara Heights';
 export type PaymentMethod = 'deposit_online' | 'duitnow_qr' | 'pay_at_clinic';
 export type PaymentProvider = 'GrabPay' | 'Touch \'n Go eWallet' | 'FPX Online Banking' | 'Visa/Mastercard (Stripe)' | 'DuitNow QR' | 'Pay at Clinic Counter';
+export type PaymentCommitmentChoice = 'deposit_50' | 'full_upfront_5pct';
 
 export interface BookingLead {
   id: string;
@@ -79,10 +80,11 @@ export interface BookingLead {
   preferredBranch: Branch;
   appointmentDate: string;
   appointmentTime: string;
-  flowType: 'quiz_recommended' | 'custom_builder' | 'direct_consultation';
+  flowType: 'quiz_recommended' | 'custom_builder' | 'direct_consultation' | 'gift_card';
   selectedTreatments: string[];
   packageTitle?: string;
-  pricingOption: 'full_package' | 'single_trial' | 'consultation_only' | 'custom_bundle';
+  pricingOption: 'full_package' | 'single_trial' | 'consultation_only' | 'custom_bundle' | 'gift_card';
+  paymentCommitment?: PaymentCommitmentChoice;
   quotedTotal: number;
   depositAmount: number;
   paymentMethod: PaymentMethod;
@@ -90,6 +92,25 @@ export interface BookingLead {
   paymentStatus: 'Paid' | 'Pending Verification' | 'Pay at Counter';
   status: LeadStatus;
   notes?: string;
+  createdAt: string;
+}
+
+export interface GiftCardOrder {
+  id: string;
+  tier: 'voucher_500' | 'voucher_1000' | 'voucher_2500' | 'custom';
+  tierTitle: string;
+  tierTitleBM: string;
+  amount: number;
+  recipientName: string;
+  recipientPhone: string;
+  recipientEmail?: string;
+  senderName: string;
+  senderPhone: string;
+  personalMessage: string;
+  deliveryMethod: 'whatsapp' | 'email';
+  scheduledDate?: string;
+  paymentProvider: PaymentProvider;
+  paymentStatus: 'Paid' | 'Pending';
   createdAt: string;
 }
 

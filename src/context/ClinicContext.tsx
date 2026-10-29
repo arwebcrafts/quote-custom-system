@@ -5,7 +5,8 @@ import {
   Treatment, 
   BookingLead, 
   LeadStatus, 
-  PromoSettings 
+  PromoSettings,
+  GiftCardOrder
 } from '../types';
 import { INITIAL_TREATMENTS } from '../data/treatments';
 import { INITIAL_LEADS } from '../data/initialLeads';
@@ -17,6 +18,26 @@ export interface ToastMessage {
   description: string;
   type: 'success' | 'info' | 'gold';
 }
+
+const INITIAL_GIFT_CARDS: GiftCardOrder[] = [
+  {
+    id: 'gc-8801',
+    tier: 'voucher_1000',
+    tierTitle: 'Signature Laser & Skin Booster Card',
+    tierTitleBM: 'Kad Rawatan Laser & Penggalak Kulit Signature',
+    amount: 1000,
+    recipientName: 'Natasha Tan',
+    recipientPhone: '+60 17-229 1199',
+    recipientEmail: 'natasha.tan@luxury.my',
+    senderName: 'Julian Wong',
+    senderPhone: '+60 12-441 8800',
+    personalMessage: 'Wishing you the most radiant year-end glow! Enjoy your treatment at Aurelia Bangsar.',
+    deliveryMethod: 'whatsapp',
+    paymentProvider: 'GrabPay',
+    paymentStatus: 'Paid',
+    createdAt: '2026-10-28T10:00:00Z',
+  }
+];
 
 interface ClinicContextType {
   language: Language;
@@ -32,29 +53,34 @@ interface ClinicContextType {
   addNewLead: (lead: Omit<BookingLead, 'id' | 'createdAt'>) => BookingLead;
   updateLeadStatus: (id: string, status: LeadStatus) => void;
   deleteLead: (id: string) => void;
+  giftCards: GiftCardOrder[];
+  addNewGiftCardOrder: (order: Omit<GiftCardOrder, 'id' | 'createdAt'>) => GiftCardOrder;
   toasts: ToastMessage[];
   addToast: (title: string, description: string, type?: 'success' | 'info' | 'gold') => void;
   removeToast: (id: string) => void;
   formatCurrency: (amount: number) => string;
   resetToDefaults: () => void;
-  // Quick pre-selection jump to quotation calculator
+  // Deep-linking tabs and treatment preselection
   preselectedTreatmentId: string | null;
   setPreselectedTreatmentId: (id: string | null) => void;
+  activeQuotationTab: 'quiz' | 'direct' | 'giftcard';
+  setActiveQuotationTab: (tab: 'quiz' | 'direct' | 'giftcard') => void;
 }
 
 const ClinicContext = createContext<ClinicContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY_TREATMENTS = 'aurelia_treatments_v1';
-const LOCAL_STORAGE_KEY_LEADS = 'aurelia_leads_v1';
-const LOCAL_STORAGE_KEY_PROMO = 'aurelia_promo_v1';
-const LOCAL_STORAGE_KEY_LANG = 'aurelia_lang_v1';
+const LOCAL_STORAGE_KEY_TREATMENTS = 'aurelia_treatments_v2';
+const LOCAL_STORAGE_KEY_LEADS = 'aurelia_leads_v2';
+const LOCAL_STORAGE_KEY_GIFTCARDS = 'aurelia_giftcards_v2';
+const LOCAL_STORAGE_KEY_PROMO = 'aurelia_promo_v2';
+const LOCAL_STORAGE_KEY_LANG = 'aurelia_lang_v2';
 
 const DEFAULT_PROMO: PromoSettings = {
   holidayPromoActive: true,
-  promoTitle: 'YEAR-END CELEBRATION VIP PRIVILEGE',
+  promoTitle: 'BLACK FRIDAY & YEAR-END RADIANCE PASS',
   promoDiscountPercent: 25,
-  announcementTextEN: '✨ Year-End Aesthetic Pass: Complimentary 7th Gen Visia® Skin Scan + RM 120 Doctor Consultation Waived with Any Protocol',
-  announcementTextBM: '✨ Pas Estetik Akhir Tahun: Percuma Imbasan Kulit Visia® Gen-7 + Yuran Konsultasi Doktor RM 120 Diketepikan untuk Semua Pakej'
+  announcementTextEN: '✨ Black Friday & Year-End Privilege: 7th Gen Visia® Skin Scan + RM 120 Consultation Waived with Any Protocol',
+  announcementTextBM: '✨ Keistimewaan Akhir Tahun & Black Friday: Percuma Imbasan Visia® Gen-7 + Yuran Konsultasi RM 120 Diketepikan'
 };
 
 export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -65,6 +91,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const [viewMode, setViewMode] = useState<ViewMode>('patient');
   const [preselectedTreatmentId, setPreselectedTreatmentId] = useState<string | null>(null);
+  const [activeQuotationTab, setActiveQuotationTab] = useState<'quiz' | 'direct' | 'giftcard'>('quiz');
 
   // Treatments with persistence
   const [treatments, setTreatments] = useState<Treatment[]>(() => {
@@ -83,6 +110,16 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return saved ? JSON.parse(saved) : INITIAL_LEADS;
     } catch {
       return INITIAL_LEADS;
+    }
+  });
+
+  // Gift Cards
+  const [giftCards, setGiftCards] = useState<GiftCardOrder[]>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY_GIFTCARDS);
+      return saved ? JSON.parse(saved) : INITIAL_GIFT_CARDS;
+    } catch {
+      return INITIAL_GIFT_CARDS;
     }
   });
 
@@ -157,6 +194,40 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return newLead;
   };
 
+  const addNewGiftCardOrder = (orderData: Omit<GiftCardOrder, 'id' | 'createdAt'>): GiftCardOrder => {
+    const newOrder: GiftCardOrder = {
+      ...orderData,
+      id: `gc-${Date.now().toString().slice(-4)}`,
+      createdAt: new Date().toISOString()
+    };
+    setGiftCards((prev) => {
+      const updated = [newOrder, ...prev];
+      localStorage.setItem(LOCAL_STORAGE_KEY_GIFTCARDS, JSON.stringify(updated));
+      return updated;
+    });
+    // Also log as lead in pipeline for clinic visibility
+    addNewLead({
+      patientName: `${orderData.senderName} (Gift for ${orderData.recipientName})`,
+      phone: orderData.senderPhone,
+      email: orderData.recipientEmail,
+      preferredBranch: 'Bangsar Flagship',
+      appointmentDate: new Date(Date.now() + 86400000 * 7).toISOString().split('T')[0],
+      appointmentTime: 'Gift Voucher Order',
+      flowType: 'gift_card',
+      selectedTreatments: [orderData.tierTitle],
+      packageTitle: `Luxury Gift Voucher: ${orderData.tierTitle}`,
+      pricingOption: 'gift_card',
+      quotedTotal: orderData.amount,
+      depositAmount: orderData.amount,
+      paymentMethod: 'deposit_online',
+      paymentProvider: orderData.paymentProvider,
+      paymentStatus: 'Paid',
+      status: 'Deposit Paid',
+      notes: `Gift Card ordered for ${orderData.recipientName} (${orderData.recipientPhone}). Message: "${orderData.personalMessage}"`,
+    });
+    return newOrder;
+  };
+
   const updateLeadStatus = (id: string, status: LeadStatus) => {
     setLeads((prev) => {
       const updated = prev.map((lead) => (lead.id === id ? { ...lead, status } : lead));
@@ -178,9 +249,11 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const resetToDefaults = () => {
     setTreatments(INITIAL_TREATMENTS);
     setLeads(INITIAL_LEADS);
+    setGiftCards(INITIAL_GIFT_CARDS);
     setPromoSettings(DEFAULT_PROMO);
     localStorage.removeItem(LOCAL_STORAGE_KEY_TREATMENTS);
     localStorage.removeItem(LOCAL_STORAGE_KEY_LEADS);
+    localStorage.removeItem(LOCAL_STORAGE_KEY_GIFTCARDS);
     localStorage.removeItem(LOCAL_STORAGE_KEY_PROMO);
     addToast('System Reset', 'All clinical prices and leads reset to live demo defaults.', 'info');
   };
@@ -207,13 +280,17 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         addNewLead,
         updateLeadStatus,
         deleteLead,
+        giftCards,
+        addNewGiftCardOrder,
         toasts,
         addToast,
         removeToast,
         formatCurrency,
         resetToDefaults,
         preselectedTreatmentId,
-        setPreselectedTreatmentId
+        setPreselectedTreatmentId,
+        activeQuotationTab,
+        setActiveQuotationTab
       }}
     >
       {children}

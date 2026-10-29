@@ -2,9 +2,11 @@ import React from 'react';
 import { ClinicProvider, useClinic } from './context/ClinicContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { NuveStatement } from './components/NuveStatement';
+import { VeridiaBentoSpecs } from './components/VeridiaBentoSpecs';
+import { DermatoAccordionTreatments } from './components/DermatoAccordionTreatments';
 import { QuotationEngine } from './components/QuotationEngine/QuotationEngine';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
-import { SignatureTreatments } from './components/SignatureTreatments';
 import { DoctorProfile } from './components/DoctorProfile';
 import { SocialProof } from './components/SocialProof';
 import { FAQ } from './components/FAQ';
@@ -29,9 +31,11 @@ const AppContent: React.FC = () => {
       <Navbar />
       <main className="flex-1">
         <Hero />
+        <NuveStatement />
+        <VeridiaBentoSpecs />
+        <DermatoAccordionTreatments />
         <QuotationEngine />
         <BeforeAfterSlider />
-        <SignatureTreatments />
         <DoctorProfile />
         <SocialProof />
         <FAQ />

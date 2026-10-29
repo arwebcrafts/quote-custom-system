@@ -5,51 +5,75 @@
 @layer base {
   html {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    color: #1A1615;
-    background-color: #FAF7F2;
+    color: #1E1217;
+    background-color: #FAF9FC;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: #C8A27E;
+    background-color: #C99E9A;
     color: #FFFFFF;
   }
 }
 
-/* Custom Glassmorphism & Luxury Pearl Surfaces */
-.glass-pearl {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 20px 50px rgba(180, 148, 115, 0.09);
+/* Atmospheric Veridia & Nuvé Surfaces */
+.bg-veridia-mesh {
+  background: radial-gradient(circle at 75% 20%, #EADCD7 0%, transparent 55%),
+              radial-gradient(circle at 20% 70%, #C99E9A 0%, transparent 60%),
+              radial-gradient(circle at 60% 85%, #B88680 0%, transparent 55%),
+              linear-gradient(135deg, #D8B2AC 0%, #C99E9A 45%, #E8D5CE 100%);
 }
 
-.glass-pearl-strong {
-  background: rgba(255, 255, 255, 0.88);
+.glass-nuve {
+  background: rgba(255, 255, 255, 0.58);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 40px rgba(110, 86, 95, 0.08);
+}
+
+.glass-nuve-strong {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
   border: 1px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 25px 60px rgba(180, 148, 115, 0.12);
+  box-shadow: 0 20px 50px rgba(110, 86, 95, 0.12);
 }
 
-.glass-onyx {
-  background: rgba(18, 16, 15, 0.88);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(200, 162, 126, 0.24);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+.glass-plum {
+  background: rgba(35, 22, 28, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(212, 163, 154, 0.28);
+  box-shadow: 0 25px 60px rgba(22, 11, 16, 0.6);
 }
 
-.glass-onyx-card {
-  background: rgba(26, 22, 21, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(200, 162, 126, 0.18);
+.glass-hud-box {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 24px rgba(35, 22, 28, 0.15);
 }
 
-/* Metallic gold sheen button animation */
+/* Wavelength spectrum animation */
+@keyframes drawSpectrum {
+  0% {
+    stroke-dashoffset: 600;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-spectrum {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 0;
+  animation: drawSpectrum 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Metallic button sheen effect */
 .btn-gold-sheen {
   position: relative;
   overflow: hidden;
@@ -66,7 +90,7 @@
   background: linear-gradient(
     60deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.4) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   transform: rotate(25deg);
@@ -77,26 +101,7 @@
   left: 120%;
 }
 
-/* Custom subtle scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #F3ECE3;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #C8A27E;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #A67D55;
-}
-
-/* Hide scrollbar for clean horizontal scrollers */
+/* Hide scrollbar for clean horizontal strips */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
