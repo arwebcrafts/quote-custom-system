@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    color: #1A1615;
+    background-color: #FAF7F2;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #C8A27E;
+    color: #FFFFFF;
+  }
+}
+
+/* Custom Glassmorphism & Luxury Pearl Surfaces */
+.glass-pearl {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 20px 50px rgba(180, 148, 115, 0.09);
+}
+
+.glass-pearl-strong {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 25px 60px rgba(180, 148, 115, 0.12);
+}
+
+.glass-onyx {
+  background: rgba(18, 16, 15, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(200, 162, 126, 0.24);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+}
+
+.glass-onyx-card {
+  background: rgba(26, 22, 21, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(200, 162, 126, 0.18);
+}
+
+/* Metallic gold sheen button animation */
+.btn-gold-sheen {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-gold-sheen::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  transition: all 0.75s ease-in-out;
+}
+
+.btn-gold-sheen:hover::after {
+  left: 120%;
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F3ECE3;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8A27E;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A67D55;
+}
+
+/* Hide scrollbar for clean horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
