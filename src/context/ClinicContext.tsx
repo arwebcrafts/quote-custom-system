@@ -65,6 +65,11 @@ interface ClinicContextType {
   setPreselectedTreatmentId: (id: string | null) => void;
   activeQuotationTab: 'quiz' | 'direct' | 'giftcard';
   setActiveQuotationTab: (tab: 'quiz' | 'direct' | 'giftcard') => void;
+  // Dedicated Luxury Booking Concierge Modal
+  isBookingModalOpen: boolean;
+  openBookingModal: (customQuote?: any) => void;
+  closeBookingModal: () => void;
+  bookingModalQuote: any;
 }
 
 const ClinicContext = createContext<ClinicContextType | undefined>(undefined);
@@ -92,6 +97,21 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [viewMode, setViewMode] = useState<ViewMode>('patient');
   const [preselectedTreatmentId, setPreselectedTreatmentId] = useState<string | null>(null);
   const [activeQuotationTab, setActiveQuotationTab] = useState<'quiz' | 'direct' | 'giftcard'>('quiz');
+  
+  // Dedicated Booking Modal State
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
+  const [bookingModalQuote, setBookingModalQuote] = useState<any>(null);
+
+  const openBookingModal = (customQuote?: any) => {
+    if (customQuote) {
+      setBookingModalQuote(customQuote);
+    }
+    setIsBookingModalOpen(true);
+  };
+
+  const closeBookingModal = () => {
+    setIsBookingModalOpen(false);
+  };
 
   // Treatments with persistence
   const [treatments, setTreatments] = useState<Treatment[]>(() => {
@@ -290,7 +310,11 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         preselectedTreatmentId,
         setPreselectedTreatmentId,
         activeQuotationTab,
-        setActiveQuotationTab
+        setActiveQuotationTab,
+        isBookingModalOpen,
+        openBookingModal,
+        closeBookingModal,
+        bookingModalQuote
       }}
     >
       {children}

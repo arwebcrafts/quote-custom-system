@@ -215,18 +215,18 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
     );
 
     return (
-      <div className="w-full max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl glass-onyx text-white border border-gold/40 shadow-onyx-depth animate-in zoom-in-95 duration-400">
-        <div className="text-center space-y-3 pb-6 border-b border-gold/25">
-          <div className="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold flex items-center justify-center mx-auto text-gold animate-bounce">
+      <div className="w-full max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-[#12100F] text-white border border-[#C8A27E]/50 shadow-2xl animate-in zoom-in-95 duration-400">
+        <div className="text-center space-y-3 pb-6 border-b border-[#C8A27E]/30">
+          <div className="w-16 h-16 rounded-full bg-[#C8A27E]/20 border-2 border-[#C8A27E] flex items-center justify-center mx-auto text-[#C8A27E] animate-bounce">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <span className="text-xs uppercase font-bold tracking-widest text-gold font-sans">
+          <span className="text-xs uppercase font-bold tracking-widest text-[#C8A27E] font-sans">
             Priority VIP Reservation Confirmed
           </span>
-          <h3 className="font-serif text-3xl sm:text-4xl font-light text-pearl-100">
+          <h3 className="font-serif text-3xl sm:text-4xl font-normal text-white">
             {language === 'EN' ? 'Welcome to Aurelia Clinic KL' : 'Selamat Datang ke Aurelia Clinic KL'}
           </h3>
-          <p className="font-sans text-xs sm:text-sm text-pearl-300 max-w-md mx-auto">
+          <p className="font-sans text-xs sm:text-sm text-white/80 max-w-md mx-auto">
             {language === 'EN'
               ? `Thank you, ${confirmedBooking.patientName}. Your private consultation slot has been reserved.`
               : `Terima kasih, ${confirmedBooking.patientName}. Slot konsultasi peribadi anda telah berjaya ditempah.`}
@@ -1020,7 +1020,7 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
       </div>
 
       {/* Confirmation & Price Summary Card */}
-      <div className="p-5 rounded-2xl glass-onyx text-white border border-gold/30 shadow-onyx-depth flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-[#12100F] text-white border border-[#C8A27E]/30 shadow-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div>
           <div className="text-[11px] text-pearl-300 uppercase tracking-wider font-sans">
             {paymentCommitment === 'deposit_50' ? 'Deposit Due Now:' : 'Total Payable Today (5% Discount Applied):'}

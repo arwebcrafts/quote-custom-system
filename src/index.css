@@ -7,14 +7,41 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     color: #1E1217;
     background-color: #FAF9FC;
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   ::selection {
     background-color: #C99E9A;
     color: #FFFFFF;
   }
+
+  /* Hardware acceleration for buttery smooth scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  img {
+    content-visibility: auto;
+  }
+}
+
+/* Luxury Scroll Reveal Animation */
+@keyframes luxuryScrollFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-reveal {
+  animation: luxuryScrollFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Atmospheric Veridia & Nuvé Surfaces */

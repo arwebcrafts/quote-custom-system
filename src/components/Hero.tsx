@@ -12,13 +12,13 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative px-3 sm:px-6 lg:px-8 pt-1 pb-10 max-w-[1550px] mx-auto font-sans">
+    <section className="relative px-3 sm:px-6 lg:px-8 pt-3 sm:pt-6 pb-12 max-w-[1550px] mx-auto font-sans">
       {/* Outer Editorial Rounded Frame with Radiant Silk Pearl & Soft Rose-Gold Glow */}
       <div className="relative rounded-[32px] sm:rounded-[40px] overflow-hidden bg-gradient-to-br from-[#FAF8F5] via-[#F5EEE8] to-[#EFE4DC] text-obsidian border border-white/90 shadow-[0_20px_50px_rgba(180,148,115,0.08)] min-h-[86vh] flex flex-col justify-between p-6 sm:p-10 lg:p-12">
         
-        {/* Ambient Specular Glass Reflections */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-white/40 filter blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-[450px] h-[450px] rounded-full bg-[#E8D6CB]/30 filter blur-3xl pointer-events-none" />
+        {/* Ambient Specular Glass Reflections with Hardware Acceleration */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-white/40 filter blur-3xl pointer-events-none transform translate-z-0 will-change-transform" />
+        <div className="absolute -bottom-20 -left-20 w-[450px] h-[450px] rounded-full bg-[#E8D6CB]/30 filter blur-3xl pointer-events-none transform translate-z-0 will-change-transform" />
 
         {/* Top Slim Subheader Inside Frame */}
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 border-b border-black/5">

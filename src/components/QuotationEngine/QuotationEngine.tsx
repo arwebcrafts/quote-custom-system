@@ -13,7 +13,8 @@ export const QuotationEngine: React.FC = () => {
     language, 
     preselectedTreatmentId, 
     activeQuotationTab, 
-    setActiveQuotationTab 
+    setActiveQuotationTab,
+    openBookingModal 
   } = useClinic();
 
   const [inBookingMode, setInBookingMode] = useState<boolean>(false);
@@ -46,14 +47,15 @@ export const QuotationEngine: React.FC = () => {
     pricingChoice: 'full_package' | 'single_trial' | 'consultation_only', 
     price: number
   ) => {
-    setQuoteSummary({
+    const summary = {
       title: language === 'EN' ? pkg.title : pkg.titleBM,
       items: language === 'EN' ? pkg.treatmentsIncluded : pkg.treatmentsIncludedBM,
       pricingOption: pricingChoice,
       quotedTotal: price,
-      flowType: 'quiz_recommended',
-    });
-    setInBookingMode(true);
+      flowType: 'quiz_recommended' as const,
+    };
+    setQuoteSummary(summary);
+    openBookingModal(summary);
   };
 
   const handleDirectComplete = (
@@ -62,14 +64,15 @@ export const QuotationEngine: React.FC = () => {
     discount: number, 
     finalTotal: number
   ) => {
-    setQuoteSummary({
+    const summary = {
       title: treatments.length > 1 ? 'Aurelia Bespoke VIP Multi-Treatment Protocol' : treatments[0].name,
       items: treatments.map((tr) => (language === 'EN' ? tr.name : tr.nameBM)),
-      pricingOption: 'custom_bundle',
+      pricingOption: 'custom_bundle' as const,
       quotedTotal: finalTotal,
-      flowType: 'custom_builder',
-    });
-    setInBookingMode(true);
+      flowType: 'custom_builder' as const,
+    };
+    setQuoteSummary(summary);
+    openBookingModal(summary);
   };
 
   return (

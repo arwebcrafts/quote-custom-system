@@ -13,6 +13,7 @@ import { FAQ } from './components/FAQ';
 import { Footer } from './components/Footer';
 import { AdminDashboard } from './components/Admin/AdminDashboard';
 import { ToastContainer } from './components/Toast';
+import { LuxuryBookingModal } from './components/LuxuryBookingModal';
 
 const AppContent: React.FC = () => {
   const { viewMode } = useClinic();
@@ -41,6 +42,7 @@ const AppContent: React.FC = () => {
         <FAQ />
       </main>
       <Footer />
+      <LuxuryBookingModal />
       <ToastContainer />
     </div>
   );

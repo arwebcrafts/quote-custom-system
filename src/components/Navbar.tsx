@@ -8,7 +8,8 @@ export const Navbar: React.FC = () => {
     t, 
     viewMode, 
     setViewMode, 
-    promoSettings 
+    promoSettings,
+    openBookingModal
   } = useClinic();
   
   const [scrolled, setScrolled] = useState(false);
@@ -37,7 +38,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-2.5 z-40 px-3 sm:px-6 max-w-7xl mx-auto transition-all duration-300">
+    <header className="sticky top-4 sm:top-5 z-40 px-3 sm:px-6 max-w-7xl mx-auto transition-all duration-300 mb-6 sm:mb-8">
       <nav 
         aria-label="Main navigation"
         className={`rounded-full transition-all duration-300 ${
@@ -133,9 +134,9 @@ export const Navbar: React.FC = () => {
             {viewMode === 'patient' ? 'Admin' : 'Patient View'}
           </button>
 
-          {/* Booking CTA: Slim button reading "Booking" */}
+          {/* Booking CTA: Slim button reading "Booking" - triggers dedicated Luxury Booking Modal */}
           <button
-            onClick={() => scrollToSection('quotation-engine')}
+            onClick={() => openBookingModal()}
             className="px-4 py-1.5 rounded-full bg-obsidian hover:bg-gold text-white text-[11px] font-sans font-semibold tracking-widest uppercase transition-all duration-200 shadow-sm"
           >
             {language === 'EN' ? 'Booking' : 'Tempahan'}
