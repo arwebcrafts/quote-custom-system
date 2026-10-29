@@ -19,7 +19,7 @@ export const DoctorProfile: React.FC = () => {
       titleBM: 'Bilik Konsultasi Estetik Peribadi',
       desc: 'Acoustically isolated consultation rooms with natural daylight calibration for genuine pigment skin diagnosis.',
       descBM: 'Bilik perbincangan bertebat akustik dengan kalibrasi cahaya siang semulajadi.',
-      image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=85',
+      image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=85',
       location: 'Bangsar Flagship'
     },
     {
@@ -27,7 +27,7 @@ export const DoctorProfile: React.FC = () => {
       titleBM: 'Pod Pemulihan Selular VIP',
       desc: 'Medical-grade zero-gravity leather recliners paired with HEPA-14 medical filtration and LED photobiomodulation.',
       descBM: 'Kerusi rehat graviti-sifar bersama penapisan udara HEPA-14 dan fototerapi LED.',
-      image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=85',
+      image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=85',
       location: 'Damansara Heights'
     },
     {
@@ -35,7 +35,7 @@ export const DoctorProfile: React.FC = () => {
       titleBM: 'Bilik Prosedur Klinikal Steril',
       desc: 'Rigid hospital-grade aseptic environments housing our genuine Fotona StarWalker & Ultraformer III devices.',
       descBM: 'Ruang aseptik gred hospital menempatkan peralatan Fotona StarWalker dan Ultraformer III.',
-      image: 'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=800&q=85',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85',
       location: 'Bangsar Flagship'
     }
   ];
@@ -63,9 +63,9 @@ export const DoctorProfile: React.FC = () => {
           <div className="glass-pearl-strong rounded-3xl p-6 sm:p-8 border border-white/95 shadow-pearl-glass flex flex-col sm:flex-row gap-6 items-start">
             <div className="w-full sm:w-48 aspect-[3/4] rounded-2xl overflow-hidden shrink-0 shadow-md border-2 border-white bg-obsidian-deep">
               <img
-                src="https://images.unsplash.com/photo-1594824813633-89025e98f7e7?auto=format&fit=crop&w=800&q=85"
+                src="/images/doctor_sophia.jpg"
                 alt="Dr. Sophia Lim, MD - Aurelia Clinic Medical Director"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
                 loading="lazy"
               />
             </div>
@@ -93,9 +93,9 @@ export const DoctorProfile: React.FC = () => {
           <div className="glass-pearl-strong rounded-3xl p-6 sm:p-8 border border-white/95 shadow-pearl-glass flex flex-col sm:flex-row gap-6 items-start">
             <div className="w-full sm:w-48 aspect-[3/4] rounded-2xl overflow-hidden shrink-0 shadow-md border-2 border-white bg-obsidian-deep">
               <img
-                src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=85"
+                src="/images/doctor_marcus.jpg"
                 alt="Dr. Marcus Tan, MBBS - Aurelia Clinic Senior Aesthetic Physician"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
                 loading="lazy"
               />
             </div>

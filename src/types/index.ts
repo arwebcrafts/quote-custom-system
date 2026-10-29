@@ -69,7 +69,15 @@ export interface ProtocolPackage {
 export type LeadStatus = 'New Quote' | 'Deposit Paid' | 'Consulted' | 'Package Closed';
 export type Branch = 'Bangsar Flagship' | 'Damansara Heights';
 export type PaymentMethod = 'deposit_online' | 'duitnow_qr' | 'pay_at_clinic';
-export type PaymentProvider = 'GrabPay' | 'Touch \'n Go eWallet' | 'FPX Online Banking' | 'Visa/Mastercard (Stripe)' | 'DuitNow QR' | 'Pay at Clinic Counter';
+export type PaymentProvider = 
+  | 'Google Pay' 
+  | 'Stripe (Visa/Mastercard/Wise)' 
+  | 'GrabPay' 
+  | 'Touch \'n Go eWallet' 
+  | 'FPX Online Banking' 
+  | 'Visa/Mastercard (Stripe)' 
+  | 'DuitNow QR' 
+  | 'Pay at Clinic Counter';
 export type PaymentCommitmentChoice = 'deposit_50' | 'full_upfront_5pct';
 
 export interface BookingLead {

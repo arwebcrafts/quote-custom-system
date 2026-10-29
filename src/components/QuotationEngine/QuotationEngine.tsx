@@ -99,48 +99,45 @@ export const QuotationEngine: React.FC = () => {
           
           {/* Top 3 Mode Tabs (Only visible when not yet in Step 4 booking) */}
           {!inBookingMode && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-lavender-mist/70 rounded-2xl border border-white/80 mb-8 font-sans">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-[#F2ECE7] rounded-2xl border border-black/5 mb-8 font-sans">
               
-              {/* Tab 1: Guided AI Skin Quiz */}
+              {/* Tab 1: Guided Skin Assessment */}
               <button
                 type="button"
                 onClick={() => setActiveQuotationTab('quiz')}
-                className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-center ${
                   activeQuotationTab === 'quiz'
-                    ? 'bg-plum-dark text-white shadow-md'
-                    : 'text-plum-muted hover:text-plum-dark hover:bg-white/60'
+                    ? 'bg-obsidian text-white shadow-sm'
+                    : 'text-obsidian/70 hover:text-obsidian hover:bg-white/60'
                 }`}
               >
-                <Sparkles className={`w-4 h-4 ${activeQuotationTab === 'quiz' ? 'text-rosegold-light' : 'text-plum-muted'}`} />
-                <span className="truncate">{language === 'EN' ? '✨ Guided AI Skin Quiz (60s)' : '✨ Kuiz Kulit AI (60s)'}</span>
+                <span>{language === 'EN' ? 'Skin Assessment (60s)' : 'Penilaian Kulit (60s)'}</span>
               </button>
 
               {/* Tab 2: Direct Procedure Calculator */}
               <button
                 type="button"
                 onClick={() => setActiveQuotationTab('direct')}
-                className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-center ${
                   activeQuotationTab === 'direct'
-                    ? 'bg-plum-dark text-white shadow-md'
-                    : 'text-plum-muted hover:text-plum-dark hover:bg-white/60'
+                    ? 'bg-obsidian text-white shadow-sm'
+                    : 'text-obsidian/70 hover:text-obsidian hover:bg-white/60'
                 }`}
               >
-                <Zap className={`w-4 h-4 ${activeQuotationTab === 'direct' ? 'text-rosegold-light' : 'text-plum-muted'}`} />
-                <span className="truncate">{language === 'EN' ? '⚡ Direct Procedure Menu' : '⚡ Menu Rawatan Terus'}</span>
+                <span>{language === 'EN' ? 'Treatment Menu' : 'Katalog Rawatan'}</span>
               </button>
 
               {/* Tab 3: Buy & Send Luxury Gift Card */}
               <button
                 type="button"
                 onClick={() => setActiveQuotationTab('giftcard')}
-                className={`py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all text-center ${
                   activeQuotationTab === 'giftcard'
-                    ? 'bg-plum-dark text-white shadow-md'
-                    : 'text-plum-muted hover:text-plum-dark hover:bg-white/60'
+                    ? 'bg-obsidian text-white shadow-sm'
+                    : 'text-obsidian/70 hover:text-obsidian hover:bg-white/60'
                 }`}
               >
-                <Gift className={`w-4 h-4 ${activeQuotationTab === 'giftcard' ? 'text-rosegold-light' : 'text-plum-muted'}`} />
-                <span className="truncate">{language === 'EN' ? '🎁 Send Luxury Gift Card' : '🎁 Hantar Kad Hadiah'}</span>
+                <span>{language === 'EN' ? 'Luxury Gift Card' : 'Kad Hadiah'}</span>
               </button>
             </div>
           )}

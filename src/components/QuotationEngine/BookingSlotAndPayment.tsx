@@ -85,9 +85,22 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
   // Payment Options & Flexible Choice (Deposit vs Full Upfront 5% Off)
   const [paymentCommitment, setPaymentCommitment] = useState<'deposit_50' | 'full_upfront_5pct'>('deposit_50');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('deposit_online');
-  const [onlineProvider, setOnlineProvider] = useState<PaymentProvider>('GrabPay');
+  const [onlineProvider, setOnlineProvider] = useState<PaymentProvider>('Google Pay');
   const [duitNowOpen, setDuitNowOpen] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingLead | null>(null);
+
+  // Card Payment (Stripe / Wise / MasterCard / Visa) States
+  const [cardNumber, setCardNumber] = useState<string>('');
+  const [cardExpiry, setCardExpiry] = useState<string>('');
+  const [cardCvc, setCardCvc] = useState<string>('');
+  const [cardHolder, setCardHolder] = useState<string>('');
+  const [cardPostal, setCardPostal] = useState<string>('');
+
+  // GPay States
+  const [gpayAuthorized, setGpayAuthorized] = useState<boolean>(true);
+
+  // FPX Bank State
+  const [selectedBank, setSelectedBank] = useState<string>('Maybank2u');
 
   const upfrontDiscount = Math.round(quoteSummary.quotedTotal * 0.05);
   const fullUpfrontAmount = quoteSummary.quotedTotal - upfrontDiscount;
@@ -103,6 +116,21 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
     if (!phone || phone.trim() === '+60' || phone.length < 8) {
       errors.phone = language === 'EN' ? 'Valid WhatsApp number is required' : 'Nombor WhatsApp sah diperlukan';
     }
+
+    // Card Details Validation if Card is selected
+    if (paymentMethod === 'deposit_online' && (onlineProvider === 'Visa/Mastercard (Stripe)' || onlineProvider === 'Stripe (Visa/Mastercard/Wise)')) {
+      const cleanCard = cardNumber.replace(/\s/g, '');
+      if (cleanCard.length < 15) {
+        errors.card = language === 'EN' ? 'Valid 16-digit card number is required' : 'Nombor kad 16-digit diperlukan';
+      }
+      if (!cardExpiry || cardExpiry.length < 4) {
+        errors.expiry = language === 'EN' ? 'Expiry MM/YY required' : 'Tarikh luput diperlukan';
+      }
+      if (!cardCvc || cardCvc.length < 3) {
+        errors.cvc = language === 'EN' ? 'CVC code required' : 'Kod CVC diperlukan';
+      }
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -671,26 +699,260 @@ export const BookingSlotAndPayment: React.FC<BookingSlotAndPaymentProps> = ({
               </div>
             </div>
 
-            {/* Provider Badges */}
+            {/* Provider Badges & Interactive Details View */}
             {paymentMethod === 'deposit_online' && (
-              <div className="mt-3.5 pt-3 border-t border-pearl-200/70 flex flex-wrap items-center gap-2">
-                {(['GrabPay', 'Touch \'n Go eWallet', 'FPX Online Banking', 'Visa/Mastercard (Stripe)'] as PaymentProvider[]).map((prov) => (
-                  <button
-                    type="button"
-                    key={prov}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOnlineProvider(prov);
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-sans font-semibold transition-all border ${
-                      onlineProvider === prov
-                        ? 'bg-obsidian text-white border-obsidian shadow-sm'
-                        : 'bg-pearl-50 text-obsidian/80 border-pearl-200 hover:bg-pearl-100'
-                    }`}
-                  >
-                    {prov}
-                  </button>
-                ))}
+              <div className="mt-3.5 pt-3 border-t border-pearl-200/70 space-y-4">
+                
+                {/* Provider Selector Tabs */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {(['Google Pay', 'Visa/Mastercard (Stripe)', 'Touch \'n Go eWallet', 'GrabPay', 'FPX Online Banking'] as PaymentProvider[]).map((prov) => (
+                    <button
+                      type="button"
+                      key={prov}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOnlineProvider(prov);
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-sans font-semibold transition-all border ${
+                        onlineProvider === prov
+                          ? 'bg-obsidian text-white border-obsidian shadow-sm'
+                          : 'bg-pearl-50 text-obsidian/80 border-pearl-200 hover:bg-pearl-100'
+                      }`}
+                    >
+                      {prov}
+                    </button>
+                  ))}
+                </div>
+
+                {/* VIEW 1: GOOGLE PAY (GPAY) DETAILS SHEET */}
+                {onlineProvider === 'Google Pay' && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#F8F9FA] border border-black/10 shadow-sm space-y-3 font-sans animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between border-b border-black/10 pb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-sans font-bold text-base tracking-tight text-obsidian flex items-center">
+                          <span className="text-blue-500 font-extrabold mr-0.5">G</span>Pay
+                        </span>
+                        <span className="text-[10px] text-emerald-700 font-bold px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-300">
+                          Biometrics Ready
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold text-obsidian font-serif">
+                        {formatCurrency(amountDueNow)}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 text-xs text-obsidian/80">
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-obsidian/60 text-[11px]">Connected Google Account:</span>
+                        <strong className="text-obsidian text-[11px] font-mono">{email.trim() || 'alex.lim.kl@gmail.com'}</strong>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-obsidian/60 text-[11px]">Default Payment Card:</span>
+                        <span className="text-obsidian text-[11px] font-medium flex items-center gap-1.5">
+                          <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-bold">VISA</span>
+                          •••• 4242 (Maybank Platinum)
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-obsidian/60 text-[11px]">Merchant Destination:</span>
+                        <span className="text-obsidian text-[11px] font-medium">Aurelia Clinic KL (Bangsar Suite)</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setGpayAuthorized(true);
+                          addToast('Google Pay Verified', 'Biometric Touch ID authentication confirmed.', 'gold');
+                        }}
+                        className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold font-sans flex items-center justify-center gap-2 border transition-all ${
+                          gpayAuthorized
+                            ? 'bg-obsidian text-white border-obsidian'
+                            : 'bg-white text-obsidian border-black/20 hover:bg-black/5'
+                        }`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                        <span>{gpayAuthorized ? 'Google Pay Linked & Authenticated ✓' : 'Tap to Authorize with Google Pay'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 2: STRIPE / WISE / MASTERCARD / VISA CARD ENTRY FORM */}
+                {(onlineProvider === 'Visa/Mastercard (Stripe)' || onlineProvider === 'Stripe (Visa/Mastercard/Wise)') && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-white border border-black/10 shadow-sm space-y-3 font-sans animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between border-b border-black/10 pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-obsidian uppercase tracking-wider">
+                          Card Payment Details
+                        </span>
+                        <span className="text-[10px] text-obsidian/50 font-medium">
+                          Stripe & Wise Encrypted
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCardNumber('4242 4242 4242 4242');
+                          setCardExpiry('12/28');
+                          setCardCvc('888');
+                          setCardHolder(patientName || 'Datin Michelle Kwan');
+                          setCardPostal('59000');
+                          setFormErrors((prev) => ({ ...prev, card: '', expiry: '', cvc: '' }));
+                        }}
+                        className="text-[10px] uppercase font-bold text-gold hover:underline"
+                      >
+                        Fill Demo Card
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-obsidian/60 block mb-1">
+                          Card Number *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            maxLength={19}
+                            value={cardNumber}
+                            onChange={(e) => {
+                              const v = e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+                              setCardNumber(v);
+                            }}
+                            placeholder="4242 4242 4242 4242"
+                            className={`w-full px-3.5 py-2 rounded-xl text-xs font-mono border focus:outline-none focus:ring-1 focus:ring-gold bg-pearl-50/50 ${
+                              formErrors.card ? 'border-red-500' : 'border-pearl-300'
+                            }`}
+                          />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-obsidian/40">
+                            <span>VISA</span>
+                            <span>MC</span>
+                            <span>WISE</span>
+                          </div>
+                        </div>
+                        {formErrors.card && (
+                          <p className="text-[10px] text-red-500 mt-1">{formErrors.card}</p>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[10px] uppercase font-bold text-obsidian/60 block mb-1">
+                            Expires (MM/YY) *
+                          </label>
+                          <input
+                            type="text"
+                            maxLength={5}
+                            value={cardExpiry}
+                            onChange={(e) => setCardExpiry(e.target.value)}
+                            placeholder="MM / YY"
+                            className={`w-full px-3.5 py-2 rounded-xl text-xs font-mono border focus:outline-none focus:ring-1 focus:ring-gold bg-pearl-50/50 ${
+                              formErrors.expiry ? 'border-red-500' : 'border-pearl-300'
+                            }`}
+                          />
+                          {formErrors.expiry && (
+                            <p className="text-[10px] text-red-500 mt-1">{formErrors.expiry}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] uppercase font-bold text-obsidian/60 block mb-1">
+                            CVC / CVV *
+                          </label>
+                          <input
+                            type="password"
+                            maxLength={4}
+                            value={cardCvc}
+                            onChange={(e) => setCardCvc(e.target.value)}
+                            placeholder="•••"
+                            className={`w-full px-3.5 py-2 rounded-xl text-xs font-mono border focus:outline-none focus:ring-1 focus:ring-gold bg-pearl-50/50 ${
+                              formErrors.cvc ? 'border-red-500' : 'border-pearl-300'
+                            }`}
+                          />
+                          {formErrors.cvc && (
+                            <p className="text-[10px] text-red-500 mt-1">{formErrors.cvc}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[10px] uppercase font-bold text-obsidian/60 block mb-1">
+                            Cardholder Name
+                          </label>
+                          <input
+                            type="text"
+                            value={cardHolder}
+                            onChange={(e) => setCardHolder(e.target.value)}
+                            placeholder={patientName || 'Full name on card'}
+                            className="w-full px-3.5 py-2 rounded-xl text-xs font-sans border border-pearl-300 focus:outline-none focus:ring-1 focus:ring-gold bg-pearl-50/50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] uppercase font-bold text-obsidian/60 block mb-1">
+                            Billing Postcode
+                          </label>
+                          <input
+                            type="text"
+                            value={cardPostal}
+                            onChange={(e) => setCardPostal(e.target.value)}
+                            placeholder="59000 (KL)"
+                            className="w-full px-3.5 py-2 rounded-xl text-xs font-sans border border-pearl-300 focus:outline-none focus:ring-1 focus:ring-gold bg-pearl-50/50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 3: TOUCH 'N GO / GRABPAY EWALLET */}
+                {(onlineProvider === 'Touch \'n Go eWallet' || onlineProvider === 'GrabPay') && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-white border border-black/10 shadow-sm space-y-3 font-sans animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between border-b border-black/10 pb-2.5">
+                      <span className="text-xs font-bold text-obsidian uppercase tracking-wider">
+                        {onlineProvider} Mobile Gateway
+                      </span>
+                      <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        Direct In-App Prompt
+                      </span>
+                    </div>
+                    <p className="text-xs text-obsidian/70">
+                      Upon confirmation, an authorization request of <strong>{formatCurrency(amountDueNow)}</strong> will be sent to your registered Malaysian mobile number ({phone || '+60 1x-xxx xxxx'}).
+                    </p>
+                  </div>
+                )}
+
+                {/* VIEW 4: FPX ONLINE BANKING */}
+                {onlineProvider === 'FPX Online Banking' && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-white border border-black/10 shadow-sm space-y-3 font-sans animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between border-b border-black/10 pb-2.5">
+                      <span className="text-xs font-bold text-obsidian uppercase tracking-wider">
+                        Select Malaysian Bank (FPX)
+                      </span>
+                      <span className="text-[10px] font-bold text-obsidian/50">
+                        Zero Processing Fee
+                      </span>
+                    </div>
+                    <select
+                      value={selectedBank}
+                      onChange={(e) => setSelectedBank(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl text-xs font-sans border border-pearl-300 focus:outline-none focus:ring-1 focus:ring-gold bg-pearl-50/50"
+                    >
+                      <option value="Maybank2u">Maybank2u (Malayan Banking Berhad)</option>
+                      <option value="CIMB Clicks">CIMB Clicks</option>
+                      <option value="Public Bank">Public Bank Online</option>
+                      <option value="Hong Leong Connect">Hong Leong Connect</option>
+                      <option value="RHB Now">RHB Now</option>
+                      <option value="AmOnline">AmOnline</option>
+                    </select>
+                  </div>
+                )}
+
               </div>
             )}
           </div>

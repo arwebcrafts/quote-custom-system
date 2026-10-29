@@ -1,219 +1,216 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useClinic } from '../context/ClinicContext';
-import { BEFORE_AFTER_CASES } from '../data/beforeAfter';
-import { 
-  Sparkles, 
-  ShieldCheck, 
-  Clock, 
-  Cpu, 
-  UserCheck, 
-  MoveHorizontal,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
+
+interface CaseStudy {
+  id: string;
+  tabLabel: string;
+  tabLabelBM: string;
+  title: string;
+  titleBM: string;
+  protocol: string;
+  protocolBM: string;
+  downtime: string;
+  sessions: string;
+  splitImage: string;
+  textureRefinement: string;
+  tolerance: string;
+  certification: string;
+}
+
+const CASES: CaseStudy[] = [
+  {
+    id: 'acne-blemish',
+    tabLabel: 'Acne & Blemish Clearance',
+    tabLabelBM: 'Parut Jerawat & Radang',
+    title: 'Severe Inflammatory Acne & Post-Blemish Pigmentation',
+    titleBM: 'Jerawat Radang Kemerahan & Parut Gelap',
+    protocol: 'Fotona StarWalker® Pico + Sylfirm X™ Dual RF + Exosome Therapy',
+    protocolBM: 'Laser Piko Fotona + Sylfirm X™ RF + Terapi Eksosom',
+    downtime: '4 – 8 hours (Zero crusting)',
+    sessions: '3 Sessions (4 weeks interval)',
+    splitImage: '/images/media_1793242317247_bbc7a6c7.png',
+    textureRefinement: '98% Texture Refinement',
+    tolerance: '100% Patient Tolerance',
+    certification: 'FDA & MDA Cleared Medical Device'
+  },
+  {
+    id: 'melasma-pico',
+    tabLabel: 'Melasma & Sun Damage',
+    tabLabelBM: 'Jeragat & Pigmentasi',
+    title: 'Deep Epidermal & Dermal Melasma Photoacoustic Shatter',
+    titleBM: 'Pecahan Melanin Pigmentasi Dermal Berketepatan Tinggi',
+    protocol: 'Fotona StarWalker® Pico Laser + Tranexamic Depigmenting Infusion',
+    protocolBM: 'Laser Piko Fotona StarWalker® + Infusi Tranexamic',
+    downtime: '2 – 4 hours mild flush',
+    sessions: '4 Sessions (3 weeks apart)',
+    splitImage: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=1200&q=85',
+    textureRefinement: '96% Melanin Reduction',
+    tolerance: '100% Patient Comfort',
+    certification: 'MOH Approved LCP Protocol'
+  },
+  {
+    id: 'glass-skin',
+    tabLabel: 'Korean Glass Skin & Pores',
+    tabLabelBM: 'Kulit Kaca Korea & Pori',
+    title: 'Cellular Hydration, Pore Smoothing & Dermal Remodeling',
+    titleBM: 'Penghalusan Pori Kasar & Seri Wajah Kaca',
+    protocol: 'Profhilo® Ultrapure HA + Rejuran® Salmon DNA Polynucleotides',
+    protocolBM: 'Profhilo® Asid Hyaluronik + DNA Salmon Rejuran®',
+    downtime: 'Zero Downtime (Immediate Glow)',
+    sessions: '2 Sessions (Monthly)',
+    splitImage: '/images/media_1793242271596_781cc21e.png',
+    textureRefinement: '+380% Pro-Collagen',
+    tolerance: '100% Pain-Free Cryo-Numb',
+    certification: 'CE Mark & MDA Approved'
+  }
+];
 
 export const BeforeAfterSlider: React.FC = () => {
-  const { t, language } = useClinic();
-
-  const [activeCategory, setActiveCategory] = useState<string>('pigmentation');
-  const [sliderPosition, setSliderPosition] = useState<number>(50); // 0 to 100 percentage
+  const { language } = useClinic();
+  const [activeCaseId, setActiveCaseId] = useState<string>('acne-blemish');
+  const [sliderPos, setSliderPos] = useState<number>(50); // percentage 0 - 100
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const activeCase = BEFORE_AFTER_CASES.find((c) => c.category === activeCategory) || BEFORE_AFTER_CASES[0];
+  const activeCase = CASES.find((c) => c.id === activeCaseId) || CASES[0];
 
-  const handleMove = useCallback((clientX: number) => {
+  const handleDrag = useCallback((clientX: number) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
+    const pct = Math.max(5, Math.min(95, (x / rect.width) * 100));
+    setSliderPos(pct);
   }, []);
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    handleMove(e.touches[0].clientX);
+  const onTouchMove = (e: React.TouchEvent) => {
+    handleDrag(e.touches[0].clientX);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    handleMove(e.clientX);
+    handleDrag(e.clientX);
   };
 
   return (
-    <section id="before-after" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
-      {/* Header */}
+    <section id="before-after" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto font-sans scroll-mt-24">
+      
+      {/* Section Header */}
       <div className="text-center max-w-2xl mx-auto mb-10">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold-deep text-xs font-bold uppercase tracking-widest mb-3 font-sans">
-          <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span>{t.beforeAfterEyebrow}</span>
+        <div className="text-[10px] uppercase font-bold tracking-[0.25em] text-obsidian/60 mb-2">
+          {language === 'EN' ? 'Proven Clinical Outcomes' : 'Hasil Klinikal Terbukti'}
         </div>
         <h2 className="font-serif text-3xl sm:text-5xl font-light text-obsidian tracking-[-0.02em]">
-          {t.beforeAfterTitle}
+          {language === 'EN' ? 'Clinical Transformation & Interactive Split-View' : 'Transformasi Klinikal & Perbandingan Interaktif'}
         </h2>
-        <p className="font-sans text-xs sm:text-base text-obsidian/75 mt-3 leading-relaxed">
-          {t.beforeAfterSub}
+        <p className="text-xs sm:text-base text-obsidian/70 mt-2.5 leading-relaxed">
+          {language === 'EN'
+            ? 'Interactive magnification of dermatological surface remodeling and cellular micro-texture clearance.'
+            : 'Pembesaran interaktif penstrukturan semula permukaan kulit dan pemulihan mikro-tekstur selular.'}
         </p>
       </div>
 
-      {/* Category Filter Pills */}
-      <div className="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar pb-6">
-        {BEFORE_AFTER_CASES.map((item) => (
+      {/* Case Tabs: Horizontally in ONE line */}
+      <div className="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar pb-8">
+        {CASES.map((item) => (
           <button
-            key={item.category}
+            key={item.id}
             onClick={() => {
-              setActiveCategory(item.category);
-              setSliderPosition(50);
+              setActiveCaseId(item.id);
+              setSliderPos(50);
             }}
-            className={`px-5 py-2.5 rounded-full text-xs font-sans font-semibold tracking-wider uppercase whitespace-nowrap transition-all ${
-              activeCategory === item.category
-                ? 'bg-obsidian text-white shadow-md'
-                : 'bg-white hover:bg-pearl-100 text-obsidian/70 border border-pearl-200'
+            className={`px-5 py-2 rounded-full text-xs font-sans font-medium tracking-wider uppercase transition-all duration-200 whitespace-nowrap border ${
+              activeCaseId === item.id
+                ? 'bg-obsidian text-white border-obsidian shadow-sm'
+                : 'bg-white/80 hover:bg-white text-obsidian/70 border-black/10'
             }`}
           >
-            {language === 'EN' ? item.categoryLabel : item.categoryLabelBM}
+            {language === 'EN' ? item.tabLabel : item.tabLabelBM}
           </button>
         ))}
       </div>
 
-      {/* Main Interactive Comparison Stage */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center glass-pearl-strong rounded-3xl p-5 sm:p-8 border border-white/95 shadow-pearl-glass">
-        {/* Left: Drag Split Comparison Image */}
-        <div className="lg:col-span-7">
+      {/* Veridia-Style Proven Clinical Outcomes Stage */}
+      <div className="rounded-[32px] sm:rounded-[36px] bg-[#FAF8F5] p-6 sm:p-10 border border-black/5 shadow-[0_15px_40px_rgba(0,0,0,0.04)] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        {/* Left Side: Clinical Description */}
+        <div className="lg:col-span-3 space-y-4 order-2 lg:order-1">
+          <div className="text-[10px] uppercase tracking-widest font-bold text-obsidian/50">
+            {language === 'EN' ? 'Target Indication' : 'Indikasi Rawatan'}
+          </div>
+          <h3 className="font-serif text-xl sm:text-2xl text-obsidian font-light leading-snug">
+            {language === 'EN' ? activeCase.title : activeCase.titleBM}
+          </h3>
+
+          <div className="space-y-3 pt-3 border-t border-black/5 text-xs text-obsidian/75">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-obsidian/50 block">Protocol</span>
+              <p className="font-medium text-obsidian">{language === 'EN' ? activeCase.protocol : activeCase.protocolBM}</p>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-obsidian/50 block">Downtime</span>
+              <p className="font-medium text-obsidian">{activeCase.downtime}</p>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-obsidian/50 block">Sessions</span>
+              <p className="font-medium text-obsidian">{activeCase.sessions}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Center: Interactive Split-View Frame with Draggable Handle */}
+        <div className="lg:col-span-6 flex flex-col items-center order-1 lg:order-2">
           <div
             ref={containerRef}
             onMouseDown={() => setIsDragging(true)}
             onMouseUp={() => setIsDragging(false)}
             onMouseLeave={() => setIsDragging(false)}
-            onMouseMove={handleMouseMove}
-            onTouchMove={handleTouchMove}
-            className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-2xl overflow-hidden cursor-ew-resize select-none border-2 border-white shadow-xl bg-obsidian-deep"
+            onMouseMove={onMouseMove}
+            onTouchMove={onTouchMove}
+            className="relative w-full max-w-[460px] aspect-square rounded-2xl overflow-hidden cursor-ew-resize select-none border border-white/90 shadow-xl bg-black/5"
           >
-            {/* After Image (Full background) */}
+            {/* Split Image Display (User's Exact Uploaded Clinical Acne/Skin Transformation) */}
             <img
-              src={activeCase.afterImage}
-              alt="After Clinical Transformation"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              loading="lazy"
+              src={activeCase.splitImage}
+              alt={activeCase.title}
+              className="w-full h-full object-cover pointer-events-none"
             />
-            {/* After Badge */}
-            <div className="absolute bottom-4 right-4 z-10 px-3 py-1 rounded-full bg-obsidian-deep/80 text-gold text-[11px] font-bold uppercase tracking-wider font-sans border border-gold/40 backdrop-blur-md">
-              After: Protocol Completed
-            </div>
 
-            {/* Before Image (Clipped overlay) */}
+            {/* Interactive Divider Line with Subtle Glow */}
             <div
-              className="absolute inset-y-0 left-0 overflow-hidden"
-              style={{ width: `${sliderPosition}%` }}
-            >
-              <img
-                src={activeCase.beforeImage}
-                alt="Before Clinical Transformation"
-                className="absolute inset-0 w-full h-full object-cover max-w-none pointer-events-none filter brightness-95"
-                style={{ width: containerRef.current ? containerRef.current.clientWidth : '100%' }}
-                loading="lazy"
-              />
-              {/* Before Badge */}
-              <div className="absolute bottom-4 left-4 z-10 px-3 py-1 rounded-full bg-obsidian-deep/80 text-pearl-200 text-[11px] font-bold uppercase tracking-wider font-sans border border-white/20 backdrop-blur-md">
-                Before: Baseline Assessment
-              </div>
-            </div>
-
-            {/* Divider Handle */}
-            <div
-              className="absolute inset-y-0 w-1 bg-white shadow-2xl pointer-events-none"
-              style={{ left: `${sliderPosition}%` }}
-            >
-              <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white shadow-lg border-2 border-gold flex items-center justify-center text-obsidian">
-                <MoveHorizontal className="w-4 h-4 text-gold-deep" />
-              </div>
-            </div>
+              style={{ left: `${sliderPos}%` }}
+              className="absolute top-0 bottom-0 w-0.5 bg-white/80 shadow-md pointer-events-none"
+            />
           </div>
 
-          {/* Hint text */}
-          <div className="flex items-center justify-center gap-2 mt-3 text-[11px] text-obsidian/60 font-sans">
-            <MoveHorizontal className="w-3.5 h-3.5 text-gold" />
-            <span>{t.dragSliderHint}</span>
+          {/* Timeline Bar below Split-View (Matching Veridia Reference) */}
+          <div className="w-full max-w-[460px] mt-4 flex items-center justify-between text-[11px] text-obsidian/60 font-sans px-2">
+            <span>Before Treatment</span>
+            <div className="flex-1 mx-4 h-0.5 bg-black/10 relative">
+              <div 
+                style={{ left: `${sliderPos}%` }} 
+                className="absolute -top-1 w-2.5 h-2.5 rounded-full bg-obsidian -translate-x-1/2" 
+              />
+            </div>
+            <span>8-Week Clearance</span>
           </div>
         </div>
 
-        {/* Right: Transparent Clinical Protocol Specs */}
-        <div className="lg:col-span-5 space-y-5">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gold-deep font-sans">
-              Clinical Case Documentation
-            </span>
-            <h3 className="font-serif text-2xl sm:text-3xl font-medium text-obsidian mt-1">
-              {activeCase.patientAge}
-            </h3>
-            <p className="font-sans text-xs sm:text-sm text-obsidian/75 mt-2 leading-relaxed">
-              <strong>Concern:</strong> {language === 'EN' ? activeCase.concern : activeCase.concernBM}
-            </p>
+        {/* Right Side: 3 Floating Spec Pills (Matching Veridia Reference) */}
+        <div className="lg:col-span-3 flex flex-col gap-3 justify-center order-3">
+          <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-sm text-center">
+            <span className="block text-2xl font-serif text-obsidian font-normal">98%</span>
+            <span className="text-[11px] uppercase tracking-wider text-obsidian/60 font-medium">Texture Refinement</span>
           </div>
 
-          {/* Clinical Details List */}
-          <div className="bg-pearl-100/70 rounded-2xl p-4 sm:p-5 border border-pearl-200 space-y-3 font-sans text-xs">
-            <div className="flex items-start justify-between py-1 border-b border-pearl-200/70">
-              <span className="text-obsidian/60 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-gold" />
-                {language === 'EN' ? 'Administered Protocol:' : 'Protokol Diberikan:'}
-              </span>
-              <strong className="text-obsidian text-right max-w-[60%] font-medium">
-                {language === 'EN' ? activeCase.protocol : activeCase.protocolBM}
-              </strong>
-            </div>
-
-            <div className="flex items-start justify-between py-1 border-b border-pearl-200/70">
-              <span className="text-obsidian/60 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-gold" />
-                {t.sessionsLabel}
-              </span>
-              <strong className="text-obsidian font-medium">
-                {activeCase.sessions}
-              </strong>
-            </div>
-
-            <div className="flex items-start justify-between py-1 border-b border-pearl-200/70">
-              <span className="text-obsidian/60 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-gold" />
-                {t.downtimeLabel}
-              </span>
-              <strong className="text-obsidian font-medium">
-                {language === 'EN' ? activeCase.downtime : activeCase.downtimeBM}
-              </strong>
-            </div>
-
-            <div className="flex items-start justify-between py-1 border-b border-pearl-200/70">
-              <span className="text-obsidian/60 flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-gold" />
-                {t.deviceLabel}
-              </span>
-              <strong className="text-obsidian text-right max-w-[55%] font-medium">
-                {activeCase.device}
-              </strong>
-            </div>
-
-            <div className="flex items-start justify-between py-1">
-              <span className="text-obsidian/60 flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-gold" />
-                {t.doctorLabel}
-              </span>
-              <strong className="text-gold-deep font-semibold">
-                {activeCase.doctor}
-              </strong>
-            </div>
+          <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-sm text-center">
+            <span className="block text-2xl font-serif text-obsidian font-normal">100%</span>
+            <span className="text-[11px] uppercase tracking-wider text-obsidian/60 font-medium">Patient Tolerance</span>
           </div>
 
-          {/* Quick CTA to book this exact protocol */}
-          <button
-            onClick={() => {
-              const el = document.getElementById('quotation-engine');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="w-full btn-gold-sheen py-3.5 rounded-full bg-obsidian hover:bg-gold text-white font-sans text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
-          >
-            <span>{language === 'EN' ? 'Calculate My Price for This Protocol' : 'Kira Harga Saya untuk Protokol Ini'}</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="p-4 rounded-2xl bg-white border border-black/5 shadow-sm text-center">
+            <span className="block text-xs uppercase tracking-widest font-bold text-obsidian">FDA Cleared</span>
+            <span className="text-[11px] text-obsidian/60 block mt-0.5">Medical Aesthetic Device</span>
+          </div>
         </div>
       </div>
     </section>
